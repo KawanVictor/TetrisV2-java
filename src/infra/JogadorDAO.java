@@ -1,41 +1,33 @@
 package src.infra;
 
-import src.domain.Jogador;
 import java.sql.*;
 
 public class JogadorDAO {
-    public static void salvarJogador(Jogador jogador) {
-        try (Connection conn = ConexaoBD.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(
-                "INSERT OR REPLACE INTO Jogador (nome, pontuacaoMaxima, totalLinhas, totalJogos, nivelMax) VALUES (?, ?, ?, ?, ?)")) {
-            stmt.setString(1, jogador.getNome());
-            stmt.setInt(2, jogador.getPontuacaoMaxima());
-            stmt.setInt(3, jogador.getTotalLinhasEliminadas());
-            stmt.setInt(4, jogador.getTotalJogos());
-            stmt.setInt(5, jogador.getNivelMaximoAlcancado());
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+    public void salvarJogador(String nome, int pontuacao) throws SQLException {
+        String sql = "INSERT INTO jogadores (nome, melhor_pontuacao) VALUES (?, ?) " +
+                    "ON CONFLICT(nome) DO UPDATE SET melhor_pontuacao = EXCLUDED.melhor_pontuacao";
+        try (Connection con = DatabaseConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, nome);
+            ps.setInt(2, pontuacao);
+            ps.executeUpdate();
         }
     }
-
-    public static Jogador buscarJogador(String nome) {
-        try (Connection conn = ConexaoBD.getConnection();
-             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Jogador WHERE nome = ?")) {
-            stmt.setString(1, nome);
-            ResultSet rs = stmt.executeQuery();
-            Jogador jogador = null;
-            if (rs.next()) {
-                jogador = new Jogador(nome);
-                jogador.setPontuacaoMaxima(rs.getInt("pontuacaoMaxima"));
-                jogador.adicionarLinhasEliminadas(rs.getInt("totalLinhas"));
-                for (int i = 0; i < rs.getInt("totalJogos"); i++) jogador.incrementarJogos();
-                jogador.atualizarNivelMaximo(rs.getInt("nivelMax"));
+    public String obterRanking() throws SQLException {
+        StringBuilder msg = new StringBuilder();
+        try (Connection con = DatabaseConnection.getConnection();
+             Statement st = con.createStatement();
+             ResultSet rs = st.executeQuery("SELECT nome, melhor_pontuacao FROM jogadores ORDER BY melhor_pontuacao DESC LIMIT 10")) {
+            int pos = 1;
+            while(rs.next()) {
+                msg.append(pos++)
+                   .append(" - ")
+                   .append(rs.getString("nome"))
+                   .append(": ")
+                   .append(rs.getInt("melhor_pontuacao"))
+                   .append("\n");
             }
-            rs.close();
-            return jogador;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
+        return msg.length() > 0 ? msg.toString() : "Nenhum registro";
     }
 }

@@ -1,8 +1,8 @@
 package src.ui;
 
-import src.domain.*;
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
+import src.domain.*;
 
 public class MenuPrincipal extends JPanel {
     public MenuPrincipal(TetrisFrame frame) {

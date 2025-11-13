@@ -41,11 +41,9 @@ public class TetrisPanel extends JPanel implements KeyListener {
         Graphics2D g = (Graphics2D) gOrig;
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // Centraliza grid
         int totalWidth = GRID_WIDTH*CELL_SIZE, panelW = getWidth();
         int x0 = (panelW-totalWidth)/2;
 
-        // Tabuleiro com sombra
         g.setColor(new Color(45, 50, 70,130));
         g.fillRoundRect(x0-9, PANEL_MARGIN-9, totalWidth+18, GRID_HEIGHT*CELL_SIZE+18, 30, 30);
 
@@ -76,12 +74,10 @@ public class TetrisPanel extends JPanel implements KeyListener {
             g.setColor(c.darker());
             g.drawRoundRect(x0+p.getX()*CELL_SIZE, PANEL_MARGIN+p.getY()*CELL_SIZE, CELL_SIZE, CELL_SIZE, 8,8);
         }
-        // HUD
         g.setFont(new Font("JetBrains Mono", Font.BOLD, 24));
         g.setColor(new Color(255,255,255,230));
         g.drawString("TETRIS", x0+8, 34);
 
-        // Timer/Status como painel destacado
         g.setColor(new Color(55, 80, 170, 170));
         g.fillRoundRect(x0+totalWidth-148, GRID_HEIGHT*CELL_SIZE + PANEL_MARGIN - 5, 140, 37, 14, 14);
         g.setColor(Color.WHITE);
@@ -92,11 +88,9 @@ public class TetrisPanel extends JPanel implements KeyListener {
         } else {
             g.drawString("Level: "+partida.getNivel(), x0+totalWidth-142, GRID_HEIGHT*CELL_SIZE+PANEL_MARGIN+18);
         }
-        // Linhas de status:
         g.setFont(new Font("Arial", Font.BOLD, 16));
         g.drawString("Pontuação: "+ partida.getPontuacao(), x0+8, GRID_HEIGHT*CELL_SIZE+PANEL_MARGIN+18);
         g.drawString("Linhas: "+ partida.getLinhasEliminadas(), x0+8, GRID_HEIGHT*CELL_SIZE+PANEL_MARGIN+37);
-        // Next e Hold melhorados
         g.setFont(new Font("Arial", Font.BOLD, 13));
         g.setColor(new Color(240,240,240));
         g.drawString("HOLD", x0-54, PANEL_MARGIN+22);
@@ -104,7 +98,6 @@ public class TetrisPanel extends JPanel implements KeyListener {
             drawMiniTetromino(g, partida.getHoldTetromino(), x0-54, PANEL_MARGIN+34, 14);
         g.drawString("NEXT", x0+totalWidth+16, PANEL_MARGIN+22);
         drawMiniTetromino(g, partida.getProximoTetromino(), x0+totalWidth+16, PANEL_MARGIN+34, 14);
-        // Game over/win
         if (modo.acabou(partida)) {
             g.setColor(new Color(255,0,36,225));
             g.setFont(new Font("Arial", Font.BOLD, 40));
@@ -128,7 +121,6 @@ public class TetrisPanel extends JPanel implements KeyListener {
         return String.format("%02d:%02d", min, sec);
     }
     @Override public void keyTyped(KeyEvent e) {}
-
     @Override
     public void keyPressed(KeyEvent e) {
         if (modo.acabou(partida)) {
@@ -159,4 +151,7 @@ public class TetrisPanel extends JPanel implements KeyListener {
         repaint();
     }
     @Override public void keyReleased(KeyEvent e) {}
+    public int getPontuacaoAtual() {
+        return partida.getPontuacao();
+    }
 }
