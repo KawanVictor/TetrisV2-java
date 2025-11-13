@@ -1,16 +1,16 @@
 package src.ui;
 
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
 
 public class TetrisFrame extends JFrame {
     public TetrisFrame() {
         setTitle("Tetris Java PRO");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
-        setSize(520, 600);
+        setSize(350, 520);
         setLocationRelativeTo(null);
-        add(new TetrisPanel(), BorderLayout.CENTER);
+        trocarPainel(new MenuPrincipal(this));
     }
 
     public void trocarPainel(JPanel novoPainel) {
@@ -18,5 +18,6 @@ public class TetrisFrame extends JFrame {
         add(novoPainel, BorderLayout.CENTER);
         revalidate();
         repaint();
+        novoPainel.requestFocusInWindow();
     }
 }

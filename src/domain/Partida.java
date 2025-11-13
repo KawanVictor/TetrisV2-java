@@ -3,6 +3,7 @@ package src.domain;
 import java.util.Random;
 
 public class Partida {
+    private final ModoPartida modo;
     private final Tabuleiro tabuleiro;
     private Tetromino tetrominoAtual, proximoTetromino, holdTetromino;
     private boolean holdDisponivel;
@@ -10,19 +11,22 @@ public class Partida {
     private long ultimaQuedaTimestamp, intervaloQuedaMillis;
     private boolean gameOver;
     private final Random random = new Random();
+    private final long startTime;
 
-    public Partida() {
-        tabuleiro = new Tabuleiro();
-        proximoTetromino = criarTetrominoAleatorio();
-        tetrominoAtual = criarTetrominoAleatorio();
-        holdTetromino = null;
-        holdDisponivel = true;
-        pontuacao = 0;
-        nivel = 1;
-        linhasEliminadas = 0;
-        intervaloQuedaMillis = calcularIntervaloQueda();
-        ultimaQuedaTimestamp = System.currentTimeMillis();
-        gameOver = false;
+    public Partida(ModoPartida modo) {
+        this.modo = modo;
+        this.tabuleiro = new Tabuleiro();
+        this.proximoTetromino = criarTetrominoAleatorio();
+        this.tetrominoAtual = criarTetrominoAleatorio();
+        this.holdTetromino = null;
+        this.holdDisponivel = true;
+        this.pontuacao = 0;
+        this.nivel = 1;
+        this.linhasEliminadas = 0;
+        this.intervaloQuedaMillis = calcularIntervaloQueda();
+        this.ultimaQuedaTimestamp = System.currentTimeMillis();
+        this.gameOver = false;
+        this.startTime = System.currentTimeMillis();
     }
 
     private Tetromino criarTetrominoAleatorio() {
@@ -46,9 +50,7 @@ public class Partida {
                 }
                 tetrominoAtual = proximoTetromino;
                 proximoTetromino = criarTetrominoAleatorio();
-                if (!tabuleiro.posicaoValida(tetrominoAtual)) {
-                    gameOver = true;
-                }
+                if (!tabuleiro.posicaoValida(tetrominoAtual)) gameOver = true;
             }
             ultimaQuedaTimestamp = agora;
         }
@@ -67,9 +69,7 @@ public class Partida {
     public void rotacionarPeca() {
         Tetromino tentativa = tetrominoAtual.clonar();
         tentativa.rotacionar();
-        if (tabuleiro.posicaoValida(tentativa)) {
-            tetrominoAtual = tentativa;
-        }
+        if (tabuleiro.posicaoValida(tentativa)) tetrominoAtual = tentativa;
     }
 
     public boolean ativarHold() {
@@ -89,9 +89,7 @@ public class Partida {
 
     public Tetromino calcularGhostPiece() {
         Tetromino ghost = tetrominoAtual.clonar();
-        while (tabuleiro.posicaoValida(ghost)) {
-            ghost.mover(0, 1);
-        }
+        while (tabuleiro.posicaoValida(ghost)) ghost.mover(0, 1);
         ghost.mover(0, -1);
         return ghost;
     }
@@ -112,7 +110,12 @@ public class Partida {
     public Tetromino getTetrominoAtual() { return tetrominoAtual; }
     public Tetromino getProximoTetromino() { return proximoTetromino; }
     public Tetromino getHoldTetromino() { return holdTetromino; }
+
     public int getPontuacao() { return pontuacao; }
     public int getNivel() { return nivel; }
+    public int getLinhasEliminadas() { return linhasEliminadas; }
     public boolean isGameOver() { return gameOver; }
+    public int getSegundosJogando() {
+        return (int)((System.currentTimeMillis() - startTime)/1000);
+    }
 }

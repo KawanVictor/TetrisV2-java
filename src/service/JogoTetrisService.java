@@ -1,13 +1,14 @@
 package src.service;
 
+import src.domain.ModoPartida;
 import src.domain.Partida;
 
 public class JogoTetrisService {
     private Partida partida;
     private InputManager inputManager;
 
-    public JogoTetrisService() {
-        partida = new Partida();
+    public JogoTetrisService(ModoPartida modo) {
+        partida = new Partida(modo);
         inputManager = new InputManager(partida);
     }
 
