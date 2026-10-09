@@ -2,7 +2,7 @@
 
 Jogo de Tetris em Java com interface gráfica Swing, cinco modos de jogo e ranking salvo em PostgreSQL.
 
-Desenvolvido como avaliação final da disciplina de **Programação Orientada a Objetos** do curso de Ciência da Computação da Unicesumar.
+Desenvolvido como avaliação final da disciplina de **Programação Orientada a Objetos** do curso de Analise e desenvolvimente de Sistemas da Unicesumar.
 
 <p align="center">
   <img src="docs/gameplay.png" alt="Tela do jogo" width="360">
