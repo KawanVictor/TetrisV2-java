@@ -1,18 +1,19 @@
-package src.ui;
+package ui;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.*;
-import src.domain.*;
-import src.service.GhostPieceCalculator;
+import domain.*;
+import service.GhostPieceCalculator;
 
 public class TetrisPanel extends JPanel implements KeyListener {
     private final Partida partida;
     private final ModoPartida modo;
+    private final Timer timer;
     private static final int GRID_WIDTH = 10, GRID_HEIGHT = 20;
-    private static final int CELL_SIZE = 34, PANEL_MARGIN = 38;
+    private static final int PANEL_MARGIN = 38, SIDE_MARGIN = 80, FOOTER = 60;
     private static final Map<Tetromino.Tipo, Color> COLORS = new HashMap<>() {{
         put(Tetromino.Tipo.I, new Color(83, 236, 255));
         put(Tetromino.Tipo.O, new Color(255, 252, 97));
@@ -25,14 +26,25 @@ public class TetrisPanel extends JPanel implements KeyListener {
     public TetrisPanel(ModoPartida modo) {
         this.modo = modo;
         this.partida = new Partida(modo);
-        setPreferredSize(new Dimension(GRID_WIDTH*CELL_SIZE + PANEL_MARGIN*2, GRID_HEIGHT*CELL_SIZE + 180));
+        setPreferredSize(new Dimension(GRID_WIDTH*28 + SIDE_MARGIN*2, GRID_HEIGHT*28 + PANEL_MARGIN + FOOTER));
         setBackground(new Color(18, 19, 32));
         setFocusable(true);
         addKeyListener(this);
-        new Timer(36, e -> {
-            if (!modo.acabou(partida)) partida.atualizar();
+        timer = new Timer(36, e -> {
+            if (!acabou()) partida.atualizar();
             repaint();
-        }).start();
+        });
+        timer.start();
+    }
+
+    private boolean acabou() {
+        return partida.isGameOver() || modo.acabou(partida);
+    }
+
+    @Override
+    public void removeNotify() {
+        timer.stop();
+        super.removeNotify();
     }
 
     @Override
@@ -41,14 +53,18 @@ public class TetrisPanel extends JPanel implements KeyListener {
         Graphics2D g = (Graphics2D) gOrig;
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        int totalWidth = GRID_WIDTH*CELL_SIZE, panelW = getWidth();
+        // Tamanho da célula acompanha o tamanho da janela
+        int cell = Math.max(8, Math.min((getHeight() - PANEL_MARGIN - FOOTER) / GRID_HEIGHT,
+                                        (getWidth() - SIDE_MARGIN*2) / GRID_WIDTH));
+        int inset = Math.max(1, cell / 8);
+        int totalWidth = GRID_WIDTH*cell, totalHeight = GRID_HEIGHT*cell, panelW = getWidth();
         int x0 = (panelW-totalWidth)/2;
 
         g.setColor(new Color(45, 50, 70,130));
-        g.fillRoundRect(x0-9, PANEL_MARGIN-9, totalWidth+18, GRID_HEIGHT*CELL_SIZE+18, 30, 30);
+        g.fillRoundRect(x0-9, PANEL_MARGIN-9, totalWidth+18, totalHeight+18, 30, 30);
 
         g.setColor(new Color(32, 36, 56));
-        g.fillRoundRect(x0, PANEL_MARGIN, totalWidth, GRID_HEIGHT*CELL_SIZE, 18, 18);
+        g.fillRoundRect(x0, PANEL_MARGIN, totalWidth, totalHeight, 18, 18);
 
         var grid = partida.getTabuleiro().getGrid();
         for (int y = 0; y < GRID_HEIGHT; y++)
@@ -57,55 +73,61 @@ public class TetrisPanel extends JPanel implements KeyListener {
                 if (t != null) {
                     Color color = COLORS.getOrDefault(t, Color.LIGHT_GRAY);
                     g.setColor(color.darker());
-                    g.fillRoundRect(x0+x * CELL_SIZE, PANEL_MARGIN+y * CELL_SIZE, CELL_SIZE, CELL_SIZE, 10, 10);
+                    g.fillRoundRect(x0+x * cell, PANEL_MARGIN+y * cell, cell, cell, 10, 10);
                     g.setColor(color);
-                    g.fill3DRect(x0+x * CELL_SIZE+4, PANEL_MARGIN+y * CELL_SIZE+4, CELL_SIZE-8, CELL_SIZE-8, true);
+                    g.fill3DRect(x0+x * cell+inset, PANEL_MARGIN+y * cell+inset, cell-inset*2, cell-inset*2, true);
                 }
             }
         Tetromino ghost = GhostPieceCalculator.calcularGhost(partida);
         g.setColor(new Color(220, 220, 255, 45));
         for (Posicao p : ghost.getPosicoes())
-            g.fillRoundRect(x0+p.getX()*CELL_SIZE, PANEL_MARGIN+p.getY()*CELL_SIZE, CELL_SIZE, CELL_SIZE,8,8);
+            g.fillRoundRect(x0+p.getX()*cell, PANEL_MARGIN+p.getY()*cell, cell, cell,8,8);
         Tetromino.Tipo tipo = partida.getTetrominoAtual().getTipo();
         for (Posicao p : partida.getTetrominoAtual().getPosicoes()) {
             Color c = COLORS.getOrDefault(tipo, Color.GREEN);
             g.setColor(c);
-            g.fill3DRect(x0+p.getX()*CELL_SIZE+4, PANEL_MARGIN+p.getY()*CELL_SIZE+4, CELL_SIZE-8, CELL_SIZE-8, true);
+            g.fill3DRect(x0+p.getX()*cell+inset, PANEL_MARGIN+p.getY()*cell+inset, cell-inset*2, cell-inset*2, true);
             g.setColor(c.darker());
-            g.drawRoundRect(x0+p.getX()*CELL_SIZE, PANEL_MARGIN+p.getY()*CELL_SIZE, CELL_SIZE, CELL_SIZE, 8,8);
+            g.drawRoundRect(x0+p.getX()*cell, PANEL_MARGIN+p.getY()*cell, cell, cell, 8,8);
         }
         g.setFont(new Font("JetBrains Mono", Font.BOLD, 24));
         g.setColor(new Color(255,255,255,230));
-        g.drawString("TETRIS", x0+8, 34);
+        g.drawString("TETRIS", x0+8, 26);
 
+        int rodapeY = PANEL_MARGIN + totalHeight + 14;
         g.setColor(new Color(55, 80, 170, 170));
-        g.fillRoundRect(x0+totalWidth-148, GRID_HEIGHT*CELL_SIZE + PANEL_MARGIN - 5, 140, 37, 14, 14);
+        g.fillRoundRect(x0+totalWidth-128, rodapeY, 128, 34, 14, 14);
         g.setColor(Color.WHITE);
         g.setFont(new Font("Arial", Font.BOLD, 16));
         if (modo.getNome().equals("Tempo")) {
-            g.drawString("Tempo: " + formatSeconds(partida.getSegundosJogando()), 
-                           x0+totalWidth-142, GRID_HEIGHT*CELL_SIZE+PANEL_MARGIN+18);
+            g.drawString("Tempo: " + formatSeconds(partida.getSegundosJogando()), x0+totalWidth-120, rodapeY+22);
         } else {
-            g.drawString("Level: "+partida.getNivel(), x0+totalWidth-142, GRID_HEIGHT*CELL_SIZE+PANEL_MARGIN+18);
+            g.drawString("Level: "+partida.getNivel(), x0+totalWidth-120, rodapeY+22);
         }
-        g.setFont(new Font("Arial", Font.BOLD, 16));
-        g.drawString("Pontuação: "+ partida.getPontuacao(), x0+8, GRID_HEIGHT*CELL_SIZE+PANEL_MARGIN+18);
-        g.drawString("Linhas: "+ partida.getLinhasEliminadas(), x0+8, GRID_HEIGHT*CELL_SIZE+PANEL_MARGIN+37);
+        g.drawString("Pontuação: "+ partida.getPontuacao(), x0+8, rodapeY+14);
+        g.drawString("Linhas: "+ partida.getLinhasEliminadas(), x0+8, rodapeY+34);
         g.setFont(new Font("Arial", Font.BOLD, 13));
         g.setColor(new Color(240,240,240));
-        g.drawString("HOLD", x0-54, PANEL_MARGIN+22);
+        g.drawString("HOLD", x0-70, PANEL_MARGIN+22);
         if (partida.getHoldTetromino() != null)
-            drawMiniTetromino(g, partida.getHoldTetromino(), x0-54, PANEL_MARGIN+34, 14);
-        g.drawString("NEXT", x0+totalWidth+16, PANEL_MARGIN+22);
-        drawMiniTetromino(g, partida.getProximoTetromino(), x0+totalWidth+16, PANEL_MARGIN+34, 14);
-        if (modo.acabou(partida)) {
+            drawMiniTetromino(g, partida.getHoldTetromino(), x0-70, PANEL_MARGIN+34, 14);
+        g.drawString("NEXT", x0+totalWidth+14, PANEL_MARGIN+22);
+        drawMiniTetromino(g, partida.getProximoTetromino(), x0+totalWidth+14, PANEL_MARGIN+34, 14);
+        if (acabou()) {
+            int centroY = PANEL_MARGIN + totalHeight/2;
+            g.setColor(new Color(10, 10, 20, 190));
+            g.fillRoundRect(x0, centroY-60, totalWidth, 110, 18, 18);
             g.setColor(new Color(255,0,36,225));
-            g.setFont(new Font("Arial", Font.BOLD, 40));
-            g.drawString(partida.isGameOver()?"GAME OVER":"WIN!", x0+28, 370);
-            g.setFont(new Font("Arial", Font.BOLD, 17));
+            g.setFont(new Font("Arial", Font.BOLD, 36));
+            drawCentralizado(g, partida.isGameOver()?"GAME OVER":"WIN!", x0, totalWidth, centroY-10);
+            g.setFont(new Font("Arial", Font.BOLD, 14));
             g.setColor(Color.WHITE);
-            g.drawString("Pressione [R] para reiniciar ou [ESC] para Menu", x0+12, 410);
+            drawCentralizado(g, "[R] reiniciar   [ESC] menu", x0, totalWidth, centroY+26);
         }
+    }
+
+    private void drawCentralizado(Graphics2D g, String texto, int x0, int largura, int y) {
+        g.drawString(texto, x0 + (largura - g.getFontMetrics().stringWidth(texto))/2, y);
     }
 
     private void drawMiniTetromino(Graphics2D g, Tetromino t, int baseX, int baseY, int cellSize) {
@@ -123,21 +145,13 @@ public class TetrisPanel extends JPanel implements KeyListener {
     @Override public void keyTyped(KeyEvent e) {}
     @Override
     public void keyPressed(KeyEvent e) {
-        if (modo.acabou(partida)) {
-            if (e.getKeyCode() == KeyEvent.VK_R) {
-                removeKeyListener(this);
-                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
-                frame.setContentPane(new MenuPrincipal((TetrisFrame) frame));
-                frame.revalidate();
-                frame.repaint();
-            }
+        TetrisFrame frame = (TetrisFrame) SwingUtilities.getWindowAncestor(this);
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            frame.trocarPainel(new MenuPrincipal(frame));
             return;
         }
-        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-            JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
-            frame.setContentPane(new MenuPrincipal((TetrisFrame) frame));
-            frame.revalidate();
-            frame.repaint();
+        if (acabou()) {
+            if (e.getKeyCode() == KeyEvent.VK_R) frame.trocarPainel(new TetrisPanel(modo));
             return;
         }
         switch (e.getKeyCode()) {

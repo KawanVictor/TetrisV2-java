@@ -1,6 +1,6 @@
-package src.service;
+package service;
 
-import src.domain.Jogador;
+import domain.Jogador;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;

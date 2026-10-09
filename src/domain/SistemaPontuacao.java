@@ -1,4 +1,4 @@
-package src.domain;
+package domain;
 
 public class SistemaPontuacao {
     public static int calcularPontos(int linhas, int nivel) {

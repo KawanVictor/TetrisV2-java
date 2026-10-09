@@ -1,4 +1,4 @@
-package src.domain;
+package domain;
 
 import java.util.Random;
 
@@ -46,8 +46,8 @@ public class Partida {
                     pontuacao += SistemaPontuacao.calcularPontos(linhas, nivel);
                     linhasEliminadas += linhas;
                     atualizarNivel();
-                    holdDisponivel = true;
                 }
+                holdDisponivel = true;
                 tetrominoAtual = proximoTetromino;
                 proximoTetromino = criarTetrominoAleatorio();
                 if (!tabuleiro.posicaoValida(tetrominoAtual)) gameOver = true;
@@ -74,15 +74,15 @@ public class Partida {
 
     public boolean ativarHold() {
         if (!holdDisponivel) return false;
+        // A peça guardada volta para a posição/rotação inicial
+        Tetromino guardada = new Tetromino(tetrominoAtual.getTipo());
         if (holdTetromino == null) {
-            holdTetromino = tetrominoAtual;
             tetrominoAtual = proximoTetromino;
             proximoTetromino = criarTetrominoAleatorio();
         } else {
-            Tetromino temp = tetrominoAtual;
             tetrominoAtual = holdTetromino;
-            holdTetromino = temp;
         }
+        holdTetromino = guardada;
         holdDisponivel = false;
         return true;
     }

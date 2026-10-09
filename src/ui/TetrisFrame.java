@@ -1,4 +1,4 @@
-package src.ui;
+package ui;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,7 +8,8 @@ public class TetrisFrame extends JFrame {
         setTitle("Tetris Java PRO");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
-        setSize(420, 700);
+        setSize(520, 720);
+        setMinimumSize(new Dimension(420, 480));
         setLocationRelativeTo(null);
         setJMenuBar(criarMenuBar());
         trocarPainel(new MenuPrincipal(this));
@@ -36,7 +37,7 @@ public class TetrisFrame extends JFrame {
                 String nome = JOptionPane.showInputDialog(this, "Digite seu nome:");
                 if (nome != null && !nome.isEmpty()) {
                     try {
-                        new src.infra.JogadorDAO().salvarJogador(nome, pontuacao);
+                        new infra.JogadorDAO().salvarJogador(nome, pontuacao);
                         JOptionPane.showMessageDialog(this, "Salvo com sucesso!");
                     } catch (Exception ex) {
                         JOptionPane.showMessageDialog(this, "Erro ao salvar: " + ex.getMessage());
@@ -49,7 +50,7 @@ public class TetrisFrame extends JFrame {
 
         ranking.addActionListener(e -> {
             try {
-                String msg = new src.infra.JogadorDAO().obterRanking();
+                String msg = new infra.JogadorDAO().obterRanking();
                 JOptionPane.showMessageDialog(this, msg, "Ranking", JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "Erro ao consultar ranking: " + ex.getMessage());

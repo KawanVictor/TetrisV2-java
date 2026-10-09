@@ -1,4 +1,4 @@
-package src.domain;
+package domain;
 
 public class ModoZen extends ModoPartida {
     public ModoZen() { super("Zen"); }

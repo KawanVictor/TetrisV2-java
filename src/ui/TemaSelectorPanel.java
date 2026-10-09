@@ -1,6 +1,6 @@
-package src.ui;
+package ui;
 
-import src.service.TemaService;
+import service.TemaService;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

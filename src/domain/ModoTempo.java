@@ -1,4 +1,4 @@
-package src.domain;
+package domain;
 
 public class ModoTempo extends ModoPartida {
     private final int tempoLimiteSegundos;

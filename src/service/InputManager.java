@@ -1,6 +1,6 @@
-package src.service;
+package service;
 
-import src.domain.Partida;
+import domain.Partida;
 
 public class InputManager {
     private final Partida partida;

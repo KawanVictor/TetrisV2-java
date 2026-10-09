@@ -1,4 +1,4 @@
-package src.util;
+package util;
 
 public class JSONUtil {
     // Métodos fictícios só para compatibilidade (implementação real depende do formato salvo/carregado)

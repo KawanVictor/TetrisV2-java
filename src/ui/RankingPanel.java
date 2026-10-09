@@ -1,7 +1,7 @@
-package src.ui;
+package ui;
 
-import src.domain.Jogador;
-import src.service.RankingService;
+import domain.Jogador;
+import service.RankingService;
 
 import javax.swing.*;
 import java.awt.*;

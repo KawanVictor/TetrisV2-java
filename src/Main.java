@@ -1,7 +1,5 @@
-package src;
-
 import javax.swing.SwingUtilities;
-import src.ui.TetrisFrame;
+import ui.TetrisFrame;
 
 public class Main {
     public static void main(String[] args) {

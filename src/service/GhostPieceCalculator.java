@@ -1,7 +1,7 @@
-package src.service;
+package service;
 
-import src.domain.Partida;
-import src.domain.Tetromino;
+import domain.Partida;
+import domain.Tetromino;
 
 public class GhostPieceCalculator {
     public static Tetromino calcularGhost(Partida partida) {

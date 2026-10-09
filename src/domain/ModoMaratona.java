@@ -1,4 +1,4 @@
-package src.domain;
+package domain;
 
 public class ModoMaratona extends ModoPartida {
     public ModoMaratona() { super("Maratona"); }

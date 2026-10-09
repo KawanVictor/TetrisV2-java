@@ -1,6 +1,6 @@
-package src.service;
+package service;
 
-import src.infra.ConfiguracaoDao;
+import infra.ConfiguracaoDao;
 
 public class TemaService {
     private static String temaAtual = "claro";

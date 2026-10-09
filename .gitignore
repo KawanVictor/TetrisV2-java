@@ -1,0 +1,4 @@
+bin/
+*.class
+tetris.log
+oracleJdk-*/

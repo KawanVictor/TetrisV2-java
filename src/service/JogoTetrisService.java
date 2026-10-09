@@ -1,7 +1,7 @@
-package src.service;
+package service;
 
-import src.domain.ModoPartida;
-import src.domain.Partida;
+import domain.ModoPartida;
+import domain.Partida;
 
 public class JogoTetrisService {
     private Partida partida;
