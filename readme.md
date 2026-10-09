@@ -72,21 +72,29 @@ Para salvar a pontuação, use o menu **Arquivo → Salvar Pontuação** durante
 
 2. Execute o jogo.
 
-   No Windows, rode o script que compila e inicia:
+   No Windows:
 
    ```
-   run.bat
+   mvnw.cmd compile exec:java
    ```
 
    Em Linux ou macOS:
 
    ```
-   mkdir -p bin
-   javac -encoding UTF-8 -d bin -cp "lib/*" $(find src -name "*.java")
-   java -cp "bin:lib/*" Main
+   ./mvnw compile exec:java
    ```
 
-   Em uma IDE (VSCode, IntelliJ, Eclipse), use `src` como pasta de fontes, adicione `lib/*.jar` ao classpath e execute a classe `Main`. No VSCode com o Extension Pack for Java isso já é o padrão.
+   Não é preciso instalar o Maven: o wrapper (`mvnw`) baixa a versão certa na primeira execução. No Windows, o `run.bat` faz o mesmo com dois cliques.
+
+   Em uma IDE (VSCode, IntelliJ, Eclipse), abra a pasta como projeto Maven e execute a classe `Main`.
+
+### Testes
+
+```
+mvnw.cmd test
+```
+
+Os testes (JUnit 5) cobrem as regras do jogo e não dependem do banco de dados: peças e rotações, colisão e remoção de linhas no tabuleiro, pontuação, hold, peça fantasma e a condição de término de cada modo.
 
 ### Banco de dados
 
@@ -108,33 +116,32 @@ A conexão padrão é `localhost:5432`, usuário `postgres`, senha `123`. Para u
 src/
 ├── Main.java    ponto de entrada
 ├── domain/      regras do jogo: Partida, Tabuleiro, Tetromino, modos, pontuação
-├── service/     serviços de apoio: peça fantasma, hold, entrada, ranking, log
+├── service/     serviços de apoio: peça fantasma, ranking, tema, persistência
 ├── infra/       acesso ao PostgreSQL (conexão e DAOs)
-├── ui/          telas Swing: janela, menu e painel do jogo
-└── util/        utilitários
-lib/             driver JDBC do PostgreSQL
+└── ui/          telas Swing: janela, menu e painel do jogo
+test/            testes unitários (JUnit 5)
+pom.xml          build Maven: dependências, testes e execução
+mvnw, mvnw.cmd   Maven Wrapper
 create_tables.sql
 run.bat
 ```
 
 Cada modo de jogo é uma subclasse de `ModoPartida` que define apenas a sua condição de término, então adicionar um modo novo não exige alterar `Partida`.
 
-## Em desenvolvimento
+## Próximos passos
 
 O código já tem a base das funcionalidades abaixo, mas elas ainda não estão ligadas à interface:
 
-- Multiplayer local (`MultiplayerManager`)
-- Seleção de temas visuais (`TemaSelectorPanel`, `TemaService`)
-- Configuração de teclas (`InputConfigPanel`)
-- Histórico de partidas no banco (`PartidaDAO`)
-- Log de eventos em arquivo (`LogJogo`)
-- Salvar e carregar partidas
+- Histórico de partidas no banco (`PartidaDAO`, `PersistenciaService`)
+- Tema visual salvo como preferência (`TemaService`, `ConfiguracaoDao`)
+- Ranking em tabela, no lugar da caixa de diálogo atual (`RankingPanel`, `RankingService`)
 
 ## Tecnologias
 
 - Java 17+
 - Java Swing
 - PostgreSQL com JDBC
+- Maven (build) e JUnit 5 (testes)
 
 ## Autor
 
