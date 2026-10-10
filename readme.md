@@ -1,12 +1,14 @@
 # Tetris Java PRO
 
-Jogo de Tetris em Java com interface gráfica Swing, cinco modos de jogo e ranking salvo em PostgreSQL.
-
-Desenvolvido como avaliação final da disciplina de **Programação Orientada a Objetos** do curso de Análise e Desenvolvimento de Sistemas da Unicesumar.
+[![CI](https://github.com/KawanVictor/TetrisV2-java/actions/workflows/ci.yml/badge.svg)](https://github.com/KawanVictor/TetrisV2-java/actions/workflows/ci.yml)
 
 <p align="center">
   <img src="docs/gameplay.png" alt="Tela do jogo" width="360">
 </p>
+
+Jogo de Tetris em Java com interface gráfica Swing, cinco modos de jogo e ranking salvo em PostgreSQL.
+
+Desenvolvido como avaliação final da disciplina de **Programação Orientada a Objetos** do curso de Análise e Desenvolvimento de Sistemas da Unicesumar.
 
 ## Funcionalidades
 
