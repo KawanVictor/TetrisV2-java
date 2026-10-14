@@ -147,7 +147,7 @@ O código já tem a base das funcionalidades abaixo, mas elas ainda não estão 
 
 ## Autor
 
-**Kawan Victor Cavalcante** — RA 24151609-2
+**Kawan Victor Cavalcante**
 [github.com/KawanVictor](https://github.com/KawanVictor)
 
 Projeto com fins acadêmicos. Sinta-se à vontade para estudar, adaptar e evoluir.
